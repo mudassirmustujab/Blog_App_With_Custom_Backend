@@ -25,7 +25,12 @@ export default function Login() {
   })
   .then((res)=>{return res.json()})
   .then((data)=>{
-
+    if (data) {
+      
+      console.log('data arrived', data)
+          localStorage.setItem('authToken',data.token)
+          console.log('token set ', data.token)
+    }
     
   })
 
