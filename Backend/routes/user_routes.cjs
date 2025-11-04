@@ -6,9 +6,9 @@ const loginController = require('../controllers/loginController.cjs')
 //import auth middleware
 
 
-appRouter.get("/", (req,res)=>{res.send('on user page')})
+appRouter.get("/", authenticationMiddleware)
 appRouter.post("/register", register)
-appRouter.post("/login",authenticationMiddleware, loginController)
+appRouter.post("/login", loginController)
 // appRouter.get("/logout")
 
 

@@ -1,2 +1,4 @@
 node_modules/
 Sir's Code/
+.env
+paypal_integration

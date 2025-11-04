@@ -28,10 +28,10 @@ const login = async (req, res)=> {
                 return;    
             }
             
-            const jsonwebtoken = jwt.sign({id},'29hodh*(he9(*fjh',{expiresIn:'6m'})
+            const jsonwebtoken = jwt.sign({id},String(process.env.JWT_SECRET_KEY),{expiresIn:'6m'})
             res.status(200).json({
                 email:userData.email,
-                token: jsonwebtoken
+                token: `Bearer ${jsonwebtoken}`
             })
        
 

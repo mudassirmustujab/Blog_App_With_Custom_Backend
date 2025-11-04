@@ -6,11 +6,14 @@ const path = require('path')
 const USER = require("../models/user.model");
 const transporter  = require("../config/smtp.config");
 const { root_dir } = require("../utils/root_dir.util");
-
+const { where } = require("sequelize");
+require('dotenv').config()
 let register_file_path = path.join(root_dir,'pages','mail','register.html')
 
 let email_reg_temp_html  =fs.readFileSync(register_file_path,'utf-8')
 
+
+let verify_link = `http://localhost:8000/api/v1/user/verify`
 
 
 const register = async (req, res) => {
@@ -50,7 +53,9 @@ const register = async (req, res) => {
       password: encrpted_password,
     });
     //update v1
-    
+    const email_token = jwt.sign({ id: user.id }, "kgjfkljgfkljgklfjgkldfj", {
+      expiresIn: "30d",
+    });
      const info = await transporter.sendMail({
        from: '"Blog App 49 Team" <fwebdev2021@gmail.com>', // sender address
        to: email, // list of receivers
@@ -59,12 +64,13 @@ const register = async (req, res) => {
        html: email_reg_temp_html.replace('{{username}}', user.username)
                                 .replace('{{email}}',user.email)
                                 .replace('{{role}}',user.role)
+                                .replace('{{verification_link}}',`${verify_link}?token=${email_token}`)
       
       })
 
 
      console.log("Message sent: %s", info.messageId);
-     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    //  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 
     // 
     res.status(200).json({ msg: "user created successfully " });
@@ -99,7 +105,7 @@ const signIn = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id }, "kgjfkljgfkljgklfjgkldfj", {
-      expiresIn: "5m",
+      expiresIn: "24h",
     });
 
     res.status(200).json({
@@ -114,7 +120,7 @@ const signIn = async (req, res) => {
 const getUser = async(req,res)=>{
   try {
 
-      const data= await USER.findAll({attributes: ['username', 'email','role']});
+      const data= await USER.findAll({attributes: ['id','username', 'email','role']});
       // console.log("user data :" ,dataValues);
       res.status(200).json({msg:"success",data})
   } catch (error) {
@@ -122,4 +128,55 @@ const getUser = async(req,res)=>{
   }
 }
 
-module.exports = { register, signIn ,getUser};
+const verifyEmail = async(req,res)=>{
+  try{
+
+      const token =  req.query.token
+      
+      // const {token} =  req.query
+
+      jwt.verify(token,process.env.JWT_TOKEN_KEY,async(err,decode)=>{
+
+        if(err){
+
+            return
+
+        }
+        else{
+
+          const {id} = decode
+
+          const user= await USER.update({email_verified:true},{where:{id}})
+
+          res.redirect('http://localhost:5173/login')
+ 
+        }
+
+      })
+
+
+  }
+  catch(error){
+
+
+  }
+}
+
+const updateRole = async (req,res)=>{
+  try {
+    console.log("testing........ update role")
+    console.log("testing........",req.body)
+    const {id} = req.params
+    const {role} = req.body
+    console.log("testing........",req.body)
+    const user = await USER.update({role},{where:{id}})
+
+    res.status(200).json({msg:"role updated"})
+    
+  } catch (error) {
+    res.status(500).json({msg:error.message})
+    
+  }
+}
+
+module.exports = { register, signIn ,getUser,verifyEmail,updateRole};

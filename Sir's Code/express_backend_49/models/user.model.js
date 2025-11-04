@@ -30,6 +30,12 @@ const USER=sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  email_verified:{
+    type: DataTypes.BOOLEAN,
+    allowNull:false,
+    defaultValue:false
+    
+  }
 });
 
 module.exports = USER
