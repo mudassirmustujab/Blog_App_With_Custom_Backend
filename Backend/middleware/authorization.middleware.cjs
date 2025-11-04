@@ -6,14 +6,13 @@ const authorizationMiddleware = (allowedRoles)=>{
     return (req, res, next)=>{
         try {
             
-            if ( req.role !== allowedRoles) {
-                return res.send('Incorrect user role')
+            if (!allowedRoles.includes(req.role)) {
+                return res.status(403).send('Incorrect user role')
             }
 
-            res.send('Access Granted - Correct User Role')
             next()
         } catch (error) {
-            res.send({error:error.message})
+            res.status(403).send({error:error.message})
         }
     }
 

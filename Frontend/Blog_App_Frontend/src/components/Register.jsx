@@ -24,7 +24,7 @@ try {
     body:JSON.stringify(data)
   })
 
-} catch (error) {q
+} catch (error) {
   return error.message
 }
 

@@ -1,4 +1,4 @@
-const { default: AuthorUSER } = require('../models/authorModel.cjs')
+const AuthorUSER = require('../models/authorModel.cjs')
 const USER = require('../models/model.cjs')
 
 const getAuthor = async (req, res)=>{
@@ -73,3 +73,6 @@ const deleteAuthor = async (req, res) => {
         res.send('error', error.message)
     }
 }
+
+
+module.exports = {getAuthor, postAuthor, getAuthors, deleteAuthor, patchAuthor}

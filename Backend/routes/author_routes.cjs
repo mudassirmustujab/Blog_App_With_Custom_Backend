@@ -1,15 +1,18 @@
 const express = require('express')
 const appRouter = express.Router()
 const authenticationMiddleware = require('../middleware/authentication.middleware.cjs')
-const authorController = require('../controllers/authorController.cjs')
-const authenticationMiddleware = require('../middleware/authentication.middleware.cjs')
+const {postAuthor} = require('../controllers/authorController.cjs')
+const authorizationMiddleware = require('../middleware/authorization.middleware.cjs')
 
 
-appRouter.get('/',authenticationMiddleware, )
-appRouter.get('/login')
-appRouter.get('/register')
-appRouter.post('/create', authenticationMiddleware, authorizat , authorController)
+appRouter.get('/',authenticationMiddleware, (req,res)=>{res.send('on Author page')} )
+appRouter.get('/login', (req,res)=>{res.send('on Author login page')} )
+appRouter.get('/register', (req,res)=>{res.send('on Author register page')} )
+appRouter.post('/create', authenticationMiddleware, authorizationMiddleware(['admin','author']) , postAuthor)
 
+
+
+module.exports = appRouter
 //1️⃣ Public routes (if needed, rarely for authors)
 
 // Usually, nothing here.#########################################################################
